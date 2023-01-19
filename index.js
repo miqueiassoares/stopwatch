@@ -10,7 +10,6 @@ const exibicao = document.querySelector("#tempo");
 const pausar = document.querySelector(".pausar");
 const retomar = document.querySelector(".retomar");
 const reiniciar = document.querySelector(".reiniciar");
-const milisegundosSpan = document.querySelector("#milisegundos");
 
 function doisNumeros(numero) {
     if (numero<10) {
@@ -20,8 +19,11 @@ function doisNumeros(numero) {
     }
 }
 
-function exibirContador() {
+function exibirContador(event) {
     exibicao.innerHTML = `${doisNumeros(horas)}:${doisNumeros(minutos)}:${doisNumeros(segundos)}<span id="milisegundos">,${doisNumeros(milisegundos)}</span>`
+    if (event) {
+        exibicao.innerHTML = '00:00:00<span id="milisegundos">,00</span>';
+    }
 }
 
 function contador() {
@@ -42,42 +44,47 @@ function contador() {
 }
 
 
-function comecar() {
+function definirIntervalo() {
     intervalo = setInterval(contador, 10);
 }
 
-reiniciar.addEventListener("click", () => {
-    clearInterval(intervalo);
-    exibicao.innerHTML = '00:00:00<span id="milisegundos">,00</span>';
-    retomar.classList.remove("ativar");
-    pausar.classList.remove("ativar");
-    reiniciar.classList.remove("ativar");
-    iniciar.classList.add("ativar");
-    milisegundos = 0;
-    segundos = 0;
-    minutos = 0;
-    horas = 0;
-});
-
-retomar.addEventListener("click", ()=> {
-    comecar();
-    retomar.classList.remove("ativar");
-    pausar.classList.add("ativar");
-});
-
-pausar.addEventListener("click", ()=> {
-    clearInterval(intervalo);
-    pausar.classList.remove("ativar");
-    retomar.classList.add("ativar");
-});
-
-function trocarClasses() {
-    iniciar.classList.remove("ativar");
-    pausar.classList.add("ativar");
-    reiniciar.classList.add("ativar");
+function trocarClasses(buttonPressionado) {
+    if (buttonPressionado === iniciar) {
+        iniciar.classList.remove("ativar");
+        pausar.classList.add("ativar");
+        reiniciar.classList.add("ativar");
+    } else if(buttonPressionado === pausar) {
+        pausar.classList.remove("ativar");
+        retomar.classList.add("ativar");
+    } else if(buttonPressionado === retomar) {
+        retomar.classList.remove("ativar");
+        pausar.classList.add("ativar");
+    } else {
+        retomar.classList.remove("ativar");
+        pausar.classList.remove("ativar");
+        reiniciar.classList.remove("ativar");
+        iniciar.classList.add("ativar");
+    }
 }
 
-iniciar.addEventListener("click", ()=> {
+reiniciar.addEventListener("click", (event) => {
+    clearInterval(intervalo);
+    exibirContador(event.target)
     trocarClasses();
-    comecar();
+    milisegundos = segundos = minutos = horas = 0;
+});
+
+retomar.addEventListener("click", (event)=> {
+    definirIntervalo();
+    trocarClasses(event.target)
+});
+
+pausar.addEventListener("click", (event)=> {
+    clearInterval(intervalo);
+    trocarClasses(event.target)
+});
+
+iniciar.addEventListener("click", (event)=> {
+    trocarClasses(event.target);
+    definirIntervalo();
 });
