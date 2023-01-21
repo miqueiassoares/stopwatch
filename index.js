@@ -1,15 +1,20 @@
 "use strict";
-let milisegundos = 0;
-let segundos = 0;
-let minutos = 0;
-let horas = 0;
-let intervalo;
 
-const iniciar = document.querySelector(".iniciar");
-const exibicao = document.querySelector("#tempo");
-const pausar = document.querySelector(".pausar");
-const retomar = document.querySelector(".retomar");
-const reiniciar = document.querySelector(".reiniciar");
+const tempo = {
+    milisegundos: 0,
+    segundos: 0,
+    minutos: 0,
+    horas: 0,
+    intervalo: null
+}
+
+const eventos = {
+    iniciar: document.querySelector(".iniciar"),
+    exibicao: document.querySelector("#tempo"),
+    pausar: document.querySelector(".pausar"),
+    retomar: document.querySelector(".retomar"),
+    reiniciar: document.querySelector(".reiniciar")
+}
 
 function doisNumeros(numero) {
     if (numero<10) {
@@ -20,71 +25,71 @@ function doisNumeros(numero) {
 }
 
 function exibirContador(event) {
-    exibicao.innerHTML = `${doisNumeros(horas)}:${doisNumeros(minutos)}:${doisNumeros(segundos)}<span id="milisegundos">,${doisNumeros(milisegundos)}</span>`
+    eventos.exibicao.innerHTML = `${doisNumeros(tempo.horas)}:${doisNumeros(tempo.minutos)}:${doisNumeros(tempo.segundos)}<span id="milisegundos">,${doisNumeros(tempo.milisegundos)}</span>`
     if (event) {
-        exibicao.innerHTML = '00:00:00<span id="milisegundos">,00</span>';
+        eventos.exibicao.innerHTML = '00:00:00<span id="milisegundos">,00</span>';
     }
 }
 
 function contador() {
-    milisegundos++;
-    if (milisegundos === 100) {
-        milisegundos = 0;
-        segundos++;
-        if (segundos === 60) {
-        segundos = 0;
-        minutos++;
-        if (minutos === 60) {
-            minutos = 0;
-            horas++;
+    tempo.milisegundos++;
+    if (tempo.milisegundos === 100) {
+        tempo.milisegundos = 0;
+        tempo.segundos++;
+        if (tempo.segundos === 60) {
+            tempo.segundos = 0;
+            tempo.minutos++;    
+            if (tempo.minutos === 60) {
+                tempo.minutos = 0;
+                tempo.horas++;
+            }
         }
-    }
     }
     exibirContador();
 }
 
 
 function definirIntervalo() {
-    intervalo = setInterval(contador, 10);
+    tempo.intervalo = setInterval(contador, 10);
 }
 
 function trocarClasses(buttonPressionado) {
-    if (buttonPressionado === iniciar) {
-        iniciar.classList.remove("ativar");
-        pausar.classList.add("ativar");
-        reiniciar.classList.add("ativar");
-    } else if(buttonPressionado === pausar) {
-        pausar.classList.remove("ativar");
-        retomar.classList.add("ativar");
-    } else if(buttonPressionado === retomar) {
-        retomar.classList.remove("ativar");
-        pausar.classList.add("ativar");
+    if (buttonPressionado === eventos.iniciar) {
+        eventos.iniciar.classList.remove("ativar");
+        eventos.pausar.classList.add("ativar");
+        eventos.reiniciar.classList.add("ativar");
+    } else if(buttonPressionado === eventos.pausar) {
+        eventos.pausar.classList.remove("ativar");
+        eventos.retomar.classList.add("ativar");
+    } else if(buttonPressionado === eventos.retomar) {
+        eventos.retomar.classList.remove("ativar");
+        eventos.pausar.classList.add("ativar");
     } else {
-        retomar.classList.remove("ativar");
-        pausar.classList.remove("ativar");
-        reiniciar.classList.remove("ativar");
-        iniciar.classList.add("ativar");
+        eventos.retomar.classList.remove("ativar");
+        eventos.pausar.classList.remove("ativar");
+        eventos.reiniciar.classList.remove("ativar");
+        eventos.iniciar.classList.add("ativar");
     }
 }
 
-reiniciar.addEventListener("click", (event) => {
-    clearInterval(intervalo);
+eventos.reiniciar.addEventListener("click", (event) => {
+    clearInterval(tempo.intervalo);
     exibirContador(event.target)
     trocarClasses();
-    milisegundos = segundos = minutos = horas = 0;
+    tempo.milisegundos = tempo.segundos = tempo.minutos = tempo.horas = 0; 
 });
 
-retomar.addEventListener("click", (event)=> {
+eventos.retomar.addEventListener("click", (event)=> {
     definirIntervalo();
     trocarClasses(event.target)
 });
 
-pausar.addEventListener("click", (event)=> {
-    clearInterval(intervalo);
+eventos.pausar.addEventListener("click", (event)=> {
+    clearInterval(tempo.intervalo);
     trocarClasses(event.target)
 });
 
-iniciar.addEventListener("click", (event)=> {
+eventos.iniciar.addEventListener("click", (event)=> {
     trocarClasses(event.target);
     definirIntervalo();
 });
